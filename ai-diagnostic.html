@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Strange Circle | AI Adoption Diagnostic</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        .progress-bar { transition: width 0.5s ease-in-out; }
+        .fade-in { animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+        .slide-up { animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+        
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        textarea:focus, input:focus { outline: none; border-color: #0f172a; ring: 2px; }
+        
+        ul.checklist li { position: relative; padding-left: 1.5em; margin-bottom: 0.75em; }
+        ul.checklist li::before { 
+            content: '→'; 
+            position: absolute; 
+            left: 0; 
+            color: #0f172a; 
+            font-weight: bold; 
+        }
+
+        .matrix-dot { transition: all 1s ease-out; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
+
+    <div class="w-full fixed top-0 left-0 bg-white/90 backdrop-blur-md shadow-sm z-20 border-b border-slate-100">
+        <div class="max-w-3xl mx-auto px-6 py-4 flex justify-between items-center">
+            <span class="text-xs font-bold text-slate-900 tracking-widest uppercase">STRANGE CIRCLE DIAGNOSTIC</span>
+            <span class="text-xs font-bold text-slate-500" id="progress-text">0%</span>
+        </div>
+        <div class="w-full h-1 bg-slate-100">
+            <div id="progress-bar" class="h-full bg-slate-900 progress-bar" style="width: 0%"></div>
+        </div>
+    </div>
+
+    <main class="flex-grow flex items-center justify-center pt-24 pb-12 px-4">
+        <div class="w-full max-w-2xl relative" id="main-container">
+            
+            <div id="start-screen" class="text-center py-8 fade-in">
+                <div class="mb-8 inline-flex items-center justify-center w-20 h-20 rounded-full bg-slate-100 text-slate-900">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+                    </svg>
+                </div>
+                <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 mb-6 tracking-tight">The AI Adoption Diagnostic</h1>
+                <p class="text-lg text-slate-600 mb-10 leading-relaxed max-w-lg mx-auto">
+                    This isn't a technical audit. It's a strategic assessment of the <strong>Motivation</strong> and <strong>Execution</strong> patterns defining your organization's AI capability.
+                </p>
+                <button id="start-btn" class="bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 px-12 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1 text-lg">
+                    Begin Assessment
+                </button>
+            </div>
+
+            <div id="quiz-screen" class="hidden slide-up">
+                <div class="mb-4">
+                    <span class="text-indigo-600 text-xs font-bold uppercase tracking-wide" id="section-title">SECTION 1</span>
+                    <h2 class="text-xl md:text-2xl font-bold text-slate-900 mt-2 leading-snug" id="question-text">
+                        Question text...
+                    </h2>
+                </div>
+
+                <div id="options-container" class="space-y-3"></div>
+
+                <div id="text-input-container" class="hidden">
+                    <textarea id="open-text-input" rows="5" class="w-full p-5 border border-slate-200 rounded-xl focus:border-slate-900 focus:ring-1 focus:ring-slate-900 text-lg shadow-sm resize-none bg-white" placeholder="Share your perspective..."></textarea>
+                    <div class="flex justify-end mt-4">
+                        <button id="next-btn" class="bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3 px-8 rounded-lg shadow transition-colors">
+                            Next →
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="result-screen" class="hidden slide-up">
+                
+                <div class="mb-10 relative w-full max-w-md mx-auto aspect-square bg-slate-50 border-2 border-slate-200 rounded-xl overflow-hidden shadow-inner">
+                    <div class="absolute top-1/2 left-0 w-full h-0.5 bg-slate-300 transform -translate-y-1/2"></div>
+                    <div class="absolute left-1/2 top-0 h-full w-0.5 bg-slate-300 transform -translate-x-1/2"></div>
+                    
+                    <div class="absolute top-2 left-2 text-xs font-bold text-slate-400">OPTIMIZER</div>
+                    <div class="absolute top-2 right-2 text-xs font-bold text-slate-400">TRANSFORMER</div>
+                    <div class="absolute bottom-2 left-2 text-xs font-bold text-slate-400">TINKERER</div>
+                    <div class="absolute bottom-2 right-2 text-xs font-bold text-slate-400">DREAMER</div>
+
+                    <div class="absolute -left-6 top-1/2 -rotate-90 text-[10px] font-bold tracking-widest text-slate-400">EXECUTION</div>
+                    <div class="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[10px] font-bold tracking-widest text-slate-400">MOTIVATION</div>
+
+                    <div id="matrix-dot" class="absolute w-6 h-6 bg-indigo-600 rounded-full border-4 border-white shadow-lg transform -translate-x-1/2 -translate-y-1/2 z-10" style="left: 50%; top: 50%;"></div>
+                </div>
+
+                <div class="text-center mb-10">
+                    <h2 class="text-sm font-bold text-slate-500 uppercase tracking-wide mb-2">You are a</h2>
+                    <h1 class="text-4xl md:text-5xl font-black text-slate-900 mb-4" id="archetype-title">Archetype</h1>
+                    <p class="text-lg text-slate-700 max-w-lg mx-auto leading-relaxed" id="archetype-desc">Description...</p>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-lg border border-slate-100 p-8 mb-10">
+                    <h3 class="font-bold text-slate-900 mb-4 text-lg">What might help right now</h3>
+                    <p class="text-slate-600 leading-relaxed text-base" id="prescription-text">
+                        Prescription goes here...
+                    </p>
+                </div>
+
+                <!-- Contact Form -->
+                <div id="contact-form-section" class="bg-white rounded-xl shadow-lg border border-slate-100 p-8 mb-10">
+                    <h3 class="font-bold text-slate-900 mb-4 text-lg">Stay in touch</h3>
+                    <p class="text-slate-600 mb-6">We'd love to share your results and continue the conversation.</p>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-2">Email *</label>
+                            <input type="email" id="contact-email" required class="w-full p-3 border border-slate-200 rounded-lg focus:border-slate-900 focus:ring-1 focus:ring-slate-900" placeholder="your@email.com">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-2">Name</label>
+                            <input type="text" id="contact-name" class="w-full p-3 border border-slate-200 rounded-lg focus:border-slate-900 focus:ring-1 focus:ring-slate-900" placeholder="Your name">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-2">Company</label>
+                            <input type="text" id="contact-company" class="w-full p-3 border border-slate-200 rounded-lg focus:border-slate-900 focus:ring-1 focus:ring-slate-900" placeholder="Your company">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-2">Role</label>
+                            <input type="text" id="contact-role" class="w-full p-3 border border-slate-200 rounded-lg focus:border-slate-900 focus:ring-1 focus:ring-slate-900" placeholder="Your role">
+                        </div>
+                    </div>
+                    
+                    <div id="contact-error" class="hidden mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm"></div>
+                    <div id="contact-success" class="hidden mt-4 p-3 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm"></div>
+                </div>
+
+                <div class="text-center">
+                    <p class="text-slate-600 mb-6 leading-relaxed max-w-lg mx-auto">
+                        <span id="cohort-intro-text">We're bringing together a small group of leaders with your profile</span>. If that sounds useful, let's find some time to talk about what it might look like.
+                    </p>
+                    <button id="cta-btn" class="bg-slate-900 text-white font-bold py-4 px-10 rounded-full shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all">
+                        Find 30 minutes to talk
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+    // ═══════════════════════════════════════════════════════
+    // SUPABASE CONFIGURATION
+    // ═══════════════════════════════════════════════════════
+    const SUPABASE_URL = 'https://bzrfomgfdfpuzkstlceo.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ6cmZvbWdmZGZwdXprc3RsY2VvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU1NzU2NTgsImV4cCI6MjA4MTE1MTY1OH0.Mb2KzMR8SlkpV41Begwc8YK-qDJuoVExNhGhH1a-tw0';
+    const NOTIFICATION_EMAIL = 'david@thisisluminary.co';
+    const CALENDAR_LINK = 'https://calendar.app.google/XFKM9R1m81xwWyJf8';
+    
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // ═══════════════════════════════════════════════════════
+    // CONTENT CONFIGURATION - EDIT BELOW THIS LINE
+    // ═══════════════════════════════════════════════════════
+
+    const questions = [
+        {
+            type: 'choice',
+            section: 'SECTION 1 — Motivation',
+            text: "When a new AI initiative is proposed, what's the FIRST question leadership tends to ask?",
+            options: [
+                { text: "What will this save us?", weight: -1, axis: 'x' },
+                { text: "Can we even build this yet?", weight: -0.5, axis: 'x' },
+                { text: "Does this solve a real customer or user need?", weight: 0.5, axis: 'x' },
+                { text: "Could this unlock a new business model?", weight: 1, axis: 'x' }
+            ]
+        },
+        {
+            type: 'choice',
+            section: 'SECTION 1 — Motivation',
+            text: "Which best describes how AI projects get funded today?",
+            options: [
+                { text: "Operational budgets focused on optimization.", weight: -1, axis: 'x' },
+                { text: "Skunkworks budgets / opportunistic pockets.", weight: -0.5, axis: 'x' },
+                { text: "Dedicated innovation budget based on user discovery.", weight: 0.5, axis: 'x' },
+                { text: "Milestone-based venture model tied to customer outcomes.", weight: 1, axis: 'x' }
+            ]
+        },
+        {
+            type: 'choice',
+            section: 'SECTION 1 — Motivation',
+            text: "How does leadership react when an AI pilot fails?",
+            options: [
+                { text: "We shouldn't have taken that risk.", weight: -1, axis: 'x' },
+                { text: "It happens, but let's not dwell.", weight: -0.5, axis: 'x' },
+                { text: "Great, what did we learn?", weight: 0.5, axis: 'x' },
+                { text: "Good — can we share this to help others avoid the trap?", weight: 1, axis: 'x' }
+            ]
+        },
+        {
+            type: 'choice',
+            section: 'SECTION 1 — Motivation',
+            text: "What does success look like for AI inside your org?",
+            options: [
+                { text: "Cost savings, automation, efficiency.", weight: -1, axis: 'x' },
+                { text: "Technical accuracy / performance.", weight: -0.5, axis: 'x' },
+                { text: "Adoption, behavioral change, workflow improvement.", weight: 0.5, axis: 'x' },
+                { text: "New revenue streams / unmet needs solved.", weight: 1, axis: 'x' }
+            ]
+        },
+        {
+            type: 'choice',
+            section: 'SECTION 1 — Motivation',
+            text: "Where do winning AI ideas come from?",
+            options: [
+                { text: "Fixing internal bottlenecks.", weight: -1, axis: 'x' },
+                { text: "Watching competitors.", weight: -0.5, axis: 'x' },
+                { text: "Observing customers, finding latent needs.", weight: 0.5, axis: 'x' },
+                { text: "Extreme users or analogous industries.", weight: 1, axis: 'x' }
+            ]
+        },
+        {
+            type: 'text',
+            section: 'Reflection',
+            text: "What's one AI initiative that truly energized your organization? Why do you think that one resonated more than others?",
+            placeholder: "The initiative was..."
+        },
+        {
+            type: 'choice',
+            section: 'SECTION 2 — Execution',
+            text: "How accessible is data in your organization today?",
+            options: [
+                { text: "Locked in departmental islands.", weight: -1, axis: 'y' },
+                { text: "Centralized but slow and restricted.", weight: -0.5, axis: 'y' },
+                { text: "Accessible, but quality varies.", weight: 0.5, axis: 'y' },
+                { text: "Reusable feature store with strong governance.", weight: 1, axis: 'y' }
+            ]
+        },
+        {
+            type: 'choice',
+            section: 'SECTION 2 — Execution',
+            text: "How do business and data teams typically work together?",
+            options: [
+                { text: "Siloed hand-offs.", weight: -1, axis: 'y' },
+                { text: "Ad-hoc collaboration.", weight: -0.5, axis: 'y' },
+                { text: "Consultative Center of Excellence.", weight: 0.5, axis: 'y' },
+                { text: "Fully embedded cross-functional teams.", weight: 1, axis: 'y' }
+            ]
+        },
+        {
+            type: 'choice',
+            section: 'SECTION 2 — Execution',
+            text: "What usually happens to models after they're first built?",
+            options: [
+                { text: "They stay on laptops.", weight: -1, axis: 'y' },
+                { text: "Painful engineering handoffs.", weight: -0.5, axis: 'y' },
+                { text: "Automated pipelines that need tuning.", weight: 0.5, axis: 'y' },
+                { text: "Full MLOps / CI-CD to production.", weight: 1, axis: 'y' }
+            ]
+        },
+        {
+            type: 'choice',
+            section: 'SECTION 2 — Execution',
+            text: "Who owns Responsible AI in your organization?",
+            options: [
+                { text: "No clear owner.", weight: -1, axis: 'y' },
+                { text: "Compliance reviews at the end.", weight: -0.5, axis: 'y' },
+                { text: "Technical teams run bias checks.", weight: 0.5, axis: 'y' },
+                { text: "Automated governance workflows.", weight: 1, axis: 'y' }
+            ]
+        },
+        {
+            type: 'choice',
+            section: 'SECTION 2 — Execution',
+            text: "How do employees access AI tools?",
+            options: [
+                { text: "Everyone uses their own tools; IT is catching up.", weight: -1, axis: 'y' },
+                { text: "Only specialists have access.", weight: -0.5, axis: 'y' },
+                { text: "Centralized access through controlled systems.", weight: 0.5, axis: 'y' },
+                { text: "Self-service platform across teams.", weight: 1, axis: 'y' }
+            ]
+        },
+        {
+            type: 'text',
+            section: 'Reflection',
+            text: "If someone on your team has a promising AI idea today, describe the journey from idea to prototype to production. Where does it usually break down?",
+            placeholder: "It usually breaks down at..."
+        },
+        {
+            type: 'choice',
+            section: 'SECTION 3 — Market Lens',
+            text: "What happens internally when a competitor launches something AI-related?",
+            options: [
+                { text: "We're behind!", weight: -1, axis: 'lens' }, 
+                { text: "Probably hype.", weight: -0.5, axis: 'lens' },
+                { text: "Does this solve real user needs?", weight: 0.5, axis: 'lens' },
+                { text: "Great — now we know where not to waste time.", weight: 1, axis: 'lens' }
+            ]
+        },
+        {
+            type: 'choice',
+            section: 'SECTION 3 — Market Lens',
+            text: "What proportion of your roadmap is table stakes vs. differentiators?",
+            options: [
+                { text: "We mostly react.", weight: -1, axis: 'lens' },
+                { text: "80% table stakes.", weight: -0.5, axis: 'lens' },
+                { text: "Balanced.", weight: 0.5, axis: 'lens' },
+                { text: "Mostly differentiators.", weight: 1, axis: 'lens' }
+            ]
+        },
+        {
+            type: 'text',
+            section: 'Reflection',
+            text: "Where outside your industry do you look for inspiration, and why?",
+            placeholder: "We look at..."
+        },
+        {
+            type: 'choice',
+            section: 'SECTION 4 — Prioritization',
+            text: "If you could remove ONE blocker right now, what would accelerate AI the most?",
+            options: [
+                { text: "Culture", weight: 0, axis: 'bottleneck', val: 'Culture' },
+                { text: "Talent", weight: 0, axis: 'bottleneck', val: 'Talent' },
+                { text: "Infrastructure", weight: 0, axis: 'bottleneck', val: 'Infrastructure' },
+                { text: "Strategic clarity", weight: 0, axis: 'bottleneck', val: 'Strategy' }
+            ]
+        }
+    ];
+
+    const archetypes = {
+        'Tinkerer': {
+            name: "Tinkerer",
+            desc: "You have incredible energy and curiosity. You're trying things, learning fast, and keeping the organization moving. But it can feel a bit like you're shouting into the void—lots of activity, but maybe not enough traction or shared direction.",
+            advice: "It feels like you have smart people trapped on isolated islands, doesn't it?<br><br>It often feels like everyone is running in different directions. What if you paused to ask: 'Which <em>one</em> of these projects would actually change our business if it worked?'"
+        },
+        'Dreamer': {
+            name: "Dreamer",
+            desc: "You see what AI could do. You've imagined the possibilities—maybe even gotten excited about a few. But when it comes to making it real, something always gets in the way. A budget freeze. A team that's stretched too thin. A vendor pitch that sounds great until you try to actually use it.",
+            advice: "Here's what's interesting: you're not stuck because you lack vision. You're stuck because the path from idea to implementation feels like it belongs to someone else—someone more technical, someone with more resources, someone who already figured this out.<br><br>Great ideas die in notebooks. The gap often isn't brilliance; it's plumbing. What if you focused less on the perfect model and more on the path to getting it into a user's hands?"
+        },
+        'Optimizer': {
+            name: "Optimizer",
+            desc: "You run a tight ship. Your efficiency is high, and you know how to deliver. But there's a nagging feeling, isn't there? That maybe you're getting really, really efficient at doing things the old way, while the world changes around you.",
+            advice: "You have a powerful engine. The question is: where are you driving it?<br><br>Efficiency feels safe. But innovation is messy. What if you measured 'learning' or 'surprise' instead of just speed and cost?"
+        },
+        'Transformer': {
+            name: "Transformer",
+            desc: "You've figured out how to balance the vision with the execution. You're setting the standard. The danger now isn't failure—it's complacency. It's easy to stop climbing when the view is this good.",
+            advice: "You're at the top of the mountain. It can be lonely up here.<br><br>You have a superpower now. What if you applied it to a problem that feels too big to solve? That's what attracts the best people."
+        }
+    };
+
+    const bottleneckAdvice = {
+        'Culture': "<br><br>You mentioned culture feels like the blocker. That's real—fear of change is powerful. But what if you didn't try to change the whole culture at once? What if you created a small 'safe zone' for just one team to experiment?",
+        'Talent': "<br><br>You mentioned talent as a blocker. That's fair—everyone's looking for the same small pool of AI specialists. But here's a question: what if the people you need are already on your team?<br><br>Your domain experts understand the problems better than any new hire ever could. What they're missing isn't intelligence or judgment. It's access to tools that feel less like coding and more like conversation. When you give experienced people the right interface, they move faster than you'd expect.",
+        'Infrastructure': "<br><br>You mentioned infrastructure is in the way. It's frustrating when the data is messy. But do you need <em>all</em> the data to be perfect? Or could you build a bridge to just the one piece you need right now?",
+        'Strategy': "<br><br>You mentioned strategy is unclear. It's hard to move when you don't know where you're going. Instead of a 5-year plan, what if you just agreed on the 'North Star' for the next 6 months?"
+    };
+
+    const cohortIntros = {
+        'Tinkerer': "We're bringing together a small group of leaders who are running fast but need a shared direction",
+        'Dreamer': "We're bringing together a small group of leaders with your profile",
+        'Optimizer': "We're bringing together a small group of leaders who've mastered efficiency and are ready for what's next",
+        'Transformer': "We're bringing together a small group of leaders at the top of their game"
+    };
+
+    // ═══════════════════════════════════════════════════════
+    // DO NOT EDIT BELOW THIS LINE
+    // ═══════════════════════════════════════════════════════
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initQuiz);
+    } else {
+        initQuiz();
+    }
+    
+    function initQuiz() {
+        let scores = { x: 0, y: 0, lens: 0, bottleneck: '' };
+        let currentQuestionIndex = 0;
+        let sessionId = null;
+        let startTime = null;
+
+        const startBtn = document.getElementById('start-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const ctaBtn = document.getElementById('cta-btn');
+
+        startBtn.addEventListener('click', startQuiz);
+        nextBtn.addEventListener('click', handleTextSubmit);
+        ctaBtn.addEventListener('click', handleCTAClick);
+
+        async function startQuiz() {
+            startTime = new Date();
+            
+            // Create session in database
+            try {
+                const { data, error } = await supabase
+                    .from('sessions')
+                    .insert([{ 
+                        started_at: startTime.toISOString()
+                    }])
+                    .select();
+                
+                if (error) throw error;
+                sessionId = data[0].id;
+                console.log('Session created:', sessionId);
+            } catch (error) {
+                console.error('Error creating session:', error);
+            }
+
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const progress = Math.round((currentQuestionIndex / questions.length) * 100);
+            document.getElementById('progress-bar').style.width = `${progress}%`;
+            document.getElementById('progress-text').innerText = `${progress}%`;
+
+            const quizScreen = document.getElementById('quiz-screen');
+            quizScreen.classList.remove('slide-up');
+            void quizScreen.offsetWidth;
+            quizScreen.classList.add('slide-up');
+
+            const q = questions[currentQuestionIndex];
+            document.getElementById('section-title').innerText = q.section;
+            document.getElementById('question-text').innerText = q.text;
+            
+            const optionsContainer = document.getElementById('options-container');
+            const textInputContainer = document.getElementById('text-input-container');
+            optionsContainer.innerHTML = '';
+
+            if (q.type === 'choice') {
+                textInputContainer.classList.add('hidden');
+                optionsContainer.classList.remove('hidden');
+                
+                q.options.forEach(opt => {
+                    const btn = document.createElement('button');
+                    btn.className = "w-full text-left p-5 rounded-xl border-2 border-slate-100 bg-white hover:border-slate-900 hover:bg-slate-50 transition-all duration-200 group flex items-start shadow-sm";
+                    
+                    btn.addEventListener('click', function() {
+                        handleChoice(opt);
+                    });
+                    
+                    const radio = document.createElement('div');
+                    radio.className = "w-5 h-5 rounded-full border-2 border-slate-300 mr-4 mt-1 flex-shrink-0 group-hover:border-slate-900 group-hover:bg-slate-900 transition-colors";
+                    
+                    const span = document.createElement('span');
+                    span.className = "text-lg text-slate-700 font-medium group-hover:text-slate-900";
+                    span.innerText = opt.text;
+                    
+                    btn.appendChild(radio);
+                    btn.appendChild(span);
+                    optionsContainer.appendChild(btn);
+                });
+            } else {
+                optionsContainer.classList.add('hidden');
+                textInputContainer.classList.remove('hidden');
+                const input = document.getElementById('open-text-input');
+                input.value = '';
+                input.placeholder = q.placeholder || "Type your answer...";
+                setTimeout(() => input.focus(), 100);
+            }
+        }
+
+        async function saveResponse(question, answer, weight = null, axis = null) {
+            if (!sessionId) return;
+            
+            try {
+                await supabase
+                    .from('responses')
+                    .insert([{
+                        session_id: sessionId,
+                        question_index: currentQuestionIndex,
+                        question_text: question.text,
+                        question_type: question.type,
+                        answer_text: answer,
+                        answer_weight: weight,
+                        answer_axis: axis
+                    }]);
+            } catch (error) {
+                console.error('Error saving response:', error);
+            }
+        }
+
+        function handleChoice(option) {
+            const q = questions[currentQuestionIndex];
+            saveResponse(q, option.text, option.weight, option.axis);
+            
+            if (option.axis === 'x') scores.x += option.weight;
+            if (option.axis === 'y') scores.y += option.weight;
+            if (option.axis === 'lens') scores.lens += option.weight;
+            if (option.axis === 'bottleneck') scores.bottleneck = option.val;
+            
+            nextQuestion();
+        }
+
+        function handleTextSubmit() {
+            const q = questions[currentQuestionIndex];
+            const answer = document.getElementById('open-text-input').value;
+            saveResponse(q, answer);
+            nextQuestion();
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                renderQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        async function showResults() {
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+            document.getElementById('progress-bar').style.width = '100%';
+            document.getElementById('progress-text').innerText = '100%';
+
+            let type = 'Tinkerer';
+            if (scores.x >= 0 && scores.y < 0) type = 'Dreamer';
+            if (scores.x < 0 && scores.y >= 0) type = 'Optimizer';
+            if (scores.x >= 0 && scores.y >= 0) type = 'Transformer';
+
+            const profile = archetypes[type];
+            let lensText = scores.lens > 0 ? "Proactive" : "Reactive";
+
+            // Calculate time spent
+            const timeSpent = Math.round((new Date() - startTime) / 1000);
+
+            // Update session with final results
+            if (sessionId) {
+                try {
+                    await supabase
+                        .from('sessions')
+                        .update({
+                            completed_at: new Date().toISOString(),
+                            time_spent_seconds: timeSpent,
+                            archetype: type,
+                            lens_modifier: lensText,
+                            motivation_score: scores.x,
+                            execution_score: scores.y,
+                            lens_score: scores.lens,
+                            bottleneck: scores.bottleneck
+                        })
+                        .eq('id', sessionId);
+                } catch (error) {
+                    console.error('Error updating session:', error);
+                }
+            }
+
+            document.getElementById('archetype-title').innerText = `${lensText} ${profile.name}`;
+            document.getElementById('archetype-desc').innerText = profile.desc;
+            document.getElementById('prescription-text').innerHTML = `${profile.advice}${bottleneckAdvice[scores.bottleneck] || ''}`;
+            document.getElementById('cohort-intro-text').innerText = cohortIntros[type];
+
+            const xPercent = ((scores.x + 5) / 10) * 100;
+            const yPercent = 100 - (((scores.y + 5) / 10) * 100);
+
+            const dot = document.getElementById('matrix-dot');
+            setTimeout(() => {
+                dot.style.left = `${xPercent}%`;
+                dot.style.top = `${yPercent}%`;
+            }, 100);
+
+            // Set up contact form submission
+            setupContactForm();
+        }
+
+        function setupContactForm() {
+            const submitButton = document.getElementById('cta-btn');
+            const originalText = submitButton.innerText;
+            
+            submitButton.addEventListener('click', async function(e) {
+                e.preventDefault();
+                
+                const email = document.getElementById('contact-email').value.trim();
+                const name = document.getElementById('contact-name').value.trim();
+                const company = document.getElementById('contact-company').value.trim();
+                const role = document.getElementById('contact-role').value.trim();
+                
+                const errorDiv = document.getElementById('contact-error');
+                const successDiv = document.getElementById('contact-success');
+                
+                errorDiv.classList.add('hidden');
+                successDiv.classList.add('hidden');
+                
+                if (!email) {
+                    errorDiv.textContent = 'Please enter your email address.';
+                    errorDiv.classList.remove('hidden');
+                    return;
+                }
+                
+                submitButton.disabled = true;
+                submitButton.innerText = 'Saving...';
+                
+                try {
+                    // Save respondent info
+                    const { data: respondentData, error: respondentError } = await supabase
+                        .from('respondents')
+                        .insert([{ email, name, company, role }])
+                        .select();
+                    
+                    if (respondentError) throw respondentError;
+                    
+                    // Link respondent to session
+                    if (sessionId && respondentData[0]) {
+                        await supabase
+                            .from('sessions')
+                            .update({ respondent_id: respondentData[0].id })
+                            .eq('id', sessionId);
+                    }
+                    
+                    successDiv.textContent = 'Thank you! Your information has been saved.';
+                    successDiv.classList.remove('hidden');
+                    
+                    // Open calendar link after 1 second
+                    setTimeout(() => {
+                        window.open(CALENDAR_LINK, '_blank');
+                    }, 1000);
+                    
+                } catch (error) {
+                    console.error('Error saving contact info:', error);
+                    errorDiv.textContent = 'There was an error saving your information. Please try again.';
+                    errorDiv.classList.remove('hidden');
+                    submitButton.disabled = false;
+                    submitButton.innerText = originalText;
+                }
+            }, { once: true }); // Only attach once
+        }
+
+        function handleCTAClick() {
+            // This will be replaced by setupContactForm when results are shown
+        }
+    }
+    </script>
+</body>
+</html>
