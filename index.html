@@ -52,7 +52,7 @@
                 <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 mb-6 tracking-tight">The AI Adoption Diagnostic</h1>
                 <p class="text-lg text-slate-600 mb-10 leading-relaxed max-w-lg mx-auto">
                     This isn't a technical audit. It's a 10-minute diagnostic that helps us organize peer learning cohorts for AI leaders.<br><br>
-                    You'll answer questions about motivation and execution in your organization. At the end, you'll see your archetype and an invitation to talk about where you benchmark compared to others, and explore our peer cohort.
+                    You'll answer questions about motivation and execution in your organization. At the end, you'll see your archetype—plus an invitation to explore our peer cohort.
                 </p>
                 <button id="start-btn" class="bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 px-12 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1 text-lg">
                     Begin Assessment
@@ -79,7 +79,7 @@
                 </div>
             </div>
 
-            <!-- NEW: Contact Form Screen (Before Results) -->
+            <!-- Contact Form Screen (Before Results) -->
             <div id="contact-screen" class="hidden text-center py-8 fade-in">
                 <div class="mb-8 inline-flex items-center justify-center w-20 h-20 rounded-full bg-slate-100 text-slate-900">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10">
@@ -385,7 +385,7 @@
         let currentQuestionIndex = 0;
         let sessionId = null;
         let startTime = null;
-        let quizResults = null; // Store results for later display
+        let quizResults = null;
 
         const startBtn = document.getElementById('start-btn');
         const nextBtn = document.getElementById('next-btn');
@@ -400,7 +400,6 @@
         async function startQuiz() {
             startTime = new Date();
             
-            // Create session in database
             try {
                 const { data, error } = await supabase
                     .from('sessions')
@@ -445,23 +444,37 @@
                 
                 q.options.forEach(opt => {
                     const btn = document.createElement('button');
-                    btn.className = "w-full text-left p-5 rounded-xl border-2 border-slate-100 bg-white hover:border-slate-900 hover:bg-slate-50 transition-all duration-200 group flex items-start shadow-sm";
+                    // Start with no hover classes
+                    btn.className = "w-full text-left p-5 rounded-xl border-2 border-slate-100 bg-white transition-all duration-200 group flex items-start shadow-sm";
                     
                     btn.addEventListener('click', function() {
                         handleChoice(opt);
                     });
                     
                     const radio = document.createElement('div');
-                    radio.className = "w-5 h-5 rounded-full border-2 border-slate-300 mr-4 mt-1 flex-shrink-0 group-hover:border-slate-900 group-hover:bg-slate-900 transition-colors";
+                    radio.className = "w-5 h-5 rounded-full border-2 border-slate-300 mr-4 mt-1 flex-shrink-0 transition-colors";
                     
                     const span = document.createElement('span');
-                    span.className = "text-lg text-slate-700 font-medium group-hover:text-slate-900";
+                    span.className = "text-lg text-slate-700 font-medium";
                     span.innerText = opt.text;
                     
                     btn.appendChild(radio);
                     btn.appendChild(span);
                     optionsContainer.appendChild(btn);
                 });
+
+                // Enable hover effects after animation completes
+                setTimeout(() => {
+                    const buttons = optionsContainer.querySelectorAll('button');
+                    buttons.forEach(btn => {
+                        btn.classList.add('hover:border-slate-900', 'hover:bg-slate-50');
+                        const radio = btn.querySelector('div');
+                        const span = btn.querySelector('span');
+                        radio.classList.add('group-hover:border-slate-900', 'group-hover:bg-slate-900');
+                        span.classList.add('group-hover:text-slate-900');
+                    });
+                }, 400);
+                
             } else {
                 optionsContainer.classList.add('hidden');
                 textInputContainer.classList.remove('hidden');
@@ -521,7 +534,6 @@
         }
 
         async function showContactForm() {
-            // Calculate results but don't show them yet
             let type = 'Tinkerer';
             if (scores.x >= 0 && scores.y < 0) type = 'Dreamer';
             if (scores.x < 0 && scores.y >= 0) type = 'Optimizer';
@@ -530,7 +542,6 @@
             const lensText = scores.lens > 0 ? "Proactive" : "Reactive";
             const timeSpent = Math.round((new Date() - startTime) / 1000);
 
-            // Store results for later
             quizResults = {
                 type,
                 lensText,
@@ -538,7 +549,6 @@
                 scores
             };
 
-            // Update session in database
             if (sessionId) {
                 try {
                     await supabase
@@ -559,7 +569,6 @@
                 }
             }
 
-            // Show contact form
             document.getElementById('quiz-screen').classList.add('hidden');
             document.getElementById('contact-screen').classList.remove('hidden');
             document.getElementById('progress-bar').style.width = '100%';
@@ -575,14 +584,12 @@
             const errorDiv = document.getElementById('contact-error-pre');
             errorDiv.classList.add('hidden');
             
-            // Validate all fields
             if (!email || !company || !name || !role) {
                 errorDiv.textContent = 'Please fill in all fields.';
                 errorDiv.classList.remove('hidden');
                 return;
             }
 
-            // Validate email format
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) {
                 errorDiv.textContent = 'Please enter a valid email address.';
@@ -594,7 +601,6 @@
             submitContactBtn.innerText = 'Loading...';
             
             try {
-                // Save respondent info
                 const { data: respondentData, error: respondentError } = await supabase
                     .from('respondents')
                     .insert([{ email, name, company, role }])
@@ -602,7 +608,6 @@
                 
                 if (respondentError) throw respondentError;
                 
-                // Link respondent to session
                 if (sessionId && respondentData[0]) {
                     await supabase
                         .from('sessions')
@@ -610,7 +615,6 @@
                         .eq('id', sessionId);
                 }
                 
-                // Now show results
                 showResults();
                 
             } catch (error) {
