@@ -51,7 +51,8 @@
                 </div>
                 <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 mb-6 tracking-tight">The AI Adoption Diagnostic</h1>
                 <p class="text-lg text-slate-600 mb-10 leading-relaxed max-w-lg mx-auto">
-                    This isn't a technical audit. It's a strategic assessment of the <strong>Motivation</strong> and <strong>Execution</strong> patterns defining your organization's AI capability.
+                    This isn't a technical audit. It's a 10-minute diagnostic that helps us organize peer learning cohorts for AI leaders.<br><br>
+                    You'll answer questions about motivation and execution in your organization. At the end, you'll see your archetype and where you fall relative to other leaders—plus an invitation to explore our peer cohort.
                 </p>
                 <button id="start-btn" class="bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 px-12 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1 text-lg">
                     Begin Assessment
@@ -75,6 +76,40 @@
                             Next →
                         </button>
                     </div>
+                </div>
+            </div>
+
+            <!-- NEW: Contact Form Screen (Before Results) -->
+            <div id="contact-screen" class="hidden text-center py-8 fade-in">
+                <div class="mb-8 inline-flex items-center justify-center w-20 h-20 rounded-full bg-slate-100 text-slate-900">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 mb-6 tracking-tight">See your results</h1>
+                <p class="text-lg text-slate-600 mb-10 leading-relaxed max-w-lg mx-auto">
+                    You've completed the diagnostic. To see where you fall in the framework, share your email and company below.
+                </p>
+
+                <div class="max-w-md mx-auto space-y-4">
+                    <div>
+                        <input type="email" id="contact-email-pre" required class="w-full p-4 border border-slate-200 rounded-lg focus:border-slate-900 focus:ring-1 focus:ring-slate-900 text-lg" placeholder="Email *">
+                    </div>
+                    <div>
+                        <input type="text" id="contact-company-pre" required class="w-full p-4 border border-slate-200 rounded-lg focus:border-slate-900 focus:ring-1 focus:ring-slate-900 text-lg" placeholder="Company *">
+                    </div>
+                    <div>
+                        <input type="text" id="contact-name-pre" required class="w-full p-4 border border-slate-200 rounded-lg focus:border-slate-900 focus:ring-1 focus:ring-slate-900 text-lg" placeholder="Name *">
+                    </div>
+                    <div>
+                        <input type="text" id="contact-role-pre" required class="w-full p-4 border border-slate-200 rounded-lg focus:border-slate-900 focus:ring-1 focus:ring-slate-900 text-lg" placeholder="Role *">
+                    </div>
+
+                    <div id="contact-error-pre" class="hidden p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm"></div>
+
+                    <button id="submit-contact-btn" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 px-12 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1 text-lg">
+                        View my results →
+                    </button>
                 </div>
             </div>
 
@@ -108,41 +143,17 @@
                     </p>
                 </div>
 
-                <!-- Contact Form -->
-                <div id="contact-form-section" class="bg-white rounded-xl shadow-lg border border-slate-100 p-8 mb-10">
-                    <h3 class="font-bold text-slate-900 mb-4 text-lg">Stay in touch</h3>
-                    <p class="text-slate-600 mb-6">We'd love to share your results and continue the conversation.</p>
-                    
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-2">Email *</label>
-                            <input type="email" id="contact-email" required class="w-full p-3 border border-slate-200 rounded-lg focus:border-slate-900 focus:ring-1 focus:ring-slate-900" placeholder="your@email.com">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-2">Name</label>
-                            <input type="text" id="contact-name" class="w-full p-3 border border-slate-200 rounded-lg focus:border-slate-900 focus:ring-1 focus:ring-slate-900" placeholder="Your name">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-2">Company</label>
-                            <input type="text" id="contact-company" class="w-full p-3 border border-slate-200 rounded-lg focus:border-slate-900 focus:ring-1 focus:ring-slate-900" placeholder="Your company">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-2">Role</label>
-                            <input type="text" id="contact-role" class="w-full p-3 border border-slate-200 rounded-lg focus:border-slate-900 focus:ring-1 focus:ring-slate-900" placeholder="Your role">
-                        </div>
-                    </div>
-                    
-                    <div id="contact-error" class="hidden mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm"></div>
-                    <div id="contact-success" class="hidden mt-4 p-3 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm"></div>
-                </div>
-
-                <div class="text-center">
-                    <p class="text-slate-600 mb-6 leading-relaxed max-w-lg mx-auto">
-                        <span id="cohort-intro-text">We're bringing together a small group of leaders with your profile</span>. If that sounds useful, let's find some time to talk about what it might look like.
+                <!-- Updated Final CTA Section -->
+                <div class="bg-white rounded-xl shadow-lg border border-slate-100 p-8 mb-10">
+                    <h3 class="font-bold text-slate-900 mb-4 text-lg">What's next</h3>
+                    <p class="text-slate-600 leading-relaxed mb-6">
+                        We're organizing invitation-only peer learning cohorts based on archetypes like yours. On a 30-minute call, we can show you where you compare to other leaders and explore whether a cohort makes sense for you.
                     </p>
-                    <button id="cta-btn" class="bg-slate-900 text-white font-bold py-4 px-10 rounded-full shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all">
-                        Find 30 minutes to talk
-                    </button>
+                    <div class="text-center">
+                        <button id="cta-btn" class="bg-slate-900 text-white font-bold py-4 px-10 rounded-full shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all">
+                            Book a conversation
+                        </button>
+                    </div>
                 </div>
 
             </div>
@@ -359,13 +370,6 @@
         'Strategy': "<br><br>You mentioned strategy is unclear. It's hard to move when you don't know where you're going. Instead of a 5-year plan, what if you just agreed on the 'North Star' for the next 6 months?"
     };
 
-    const cohortIntros = {
-        'Tinkerer': "We're bringing together a small group of leaders who are running fast but need a shared direction",
-        'Dreamer': "We're bringing together a small group of leaders with your profile",
-        'Optimizer': "We're bringing together a small group of leaders who've mastered efficiency and are ready for what's next",
-        'Transformer': "We're bringing together a small group of leaders at the top of their game"
-    };
-
     // ═══════════════════════════════════════════════════════
     // DO NOT EDIT BELOW THIS LINE
     // ═══════════════════════════════════════════════════════
@@ -381,14 +385,17 @@
         let currentQuestionIndex = 0;
         let sessionId = null;
         let startTime = null;
+        let quizResults = null; // Store results for later display
 
         const startBtn = document.getElementById('start-btn');
         const nextBtn = document.getElementById('next-btn');
+        const submitContactBtn = document.getElementById('submit-contact-btn');
         const ctaBtn = document.getElementById('cta-btn');
 
         startBtn.addEventListener('click', startQuiz);
         nextBtn.addEventListener('click', handleTextSubmit);
-        ctaBtn.addEventListener('click', handleCTAClick);
+        submitContactBtn.addEventListener('click', handleContactSubmit);
+        ctaBtn.addEventListener('click', () => window.open(CALENDAR_LINK, '_blank'));
 
         async function startQuiz() {
             startTime = new Date();
@@ -509,28 +516,29 @@
             if (currentQuestionIndex < questions.length) {
                 renderQuestion();
             } else {
-                showResults();
+                showContactForm();
             }
         }
 
-        async function showResults() {
-            document.getElementById('quiz-screen').classList.add('hidden');
-            document.getElementById('result-screen').classList.remove('hidden');
-            document.getElementById('progress-bar').style.width = '100%';
-            document.getElementById('progress-text').innerText = '100%';
-
+        async function showContactForm() {
+            // Calculate results but don't show them yet
             let type = 'Tinkerer';
             if (scores.x >= 0 && scores.y < 0) type = 'Dreamer';
             if (scores.x < 0 && scores.y >= 0) type = 'Optimizer';
             if (scores.x >= 0 && scores.y >= 0) type = 'Transformer';
 
-            const profile = archetypes[type];
-            let lensText = scores.lens > 0 ? "Proactive" : "Reactive";
-
-            // Calculate time spent
+            const lensText = scores.lens > 0 ? "Proactive" : "Reactive";
             const timeSpent = Math.round((new Date() - startTime) / 1000);
 
-            // Update session with final results
+            // Store results for later
+            quizResults = {
+                type,
+                lensText,
+                timeSpent,
+                scores
+            };
+
+            // Update session in database
             if (sessionId) {
                 try {
                     await supabase
@@ -551,10 +559,79 @@
                 }
             }
 
+            // Show contact form
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('contact-screen').classList.remove('hidden');
+            document.getElementById('progress-bar').style.width = '100%';
+            document.getElementById('progress-text').innerText = '100%';
+        }
+
+        async function handleContactSubmit() {
+            const email = document.getElementById('contact-email-pre').value.trim();
+            const company = document.getElementById('contact-company-pre').value.trim();
+            const name = document.getElementById('contact-name-pre').value.trim();
+            const role = document.getElementById('contact-role-pre').value.trim();
+            
+            const errorDiv = document.getElementById('contact-error-pre');
+            errorDiv.classList.add('hidden');
+            
+            // Validate all fields
+            if (!email || !company || !name || !role) {
+                errorDiv.textContent = 'Please fill in all fields.';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            // Validate email format
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                errorDiv.textContent = 'Please enter a valid email address.';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+            
+            submitContactBtn.disabled = true;
+            submitContactBtn.innerText = 'Loading...';
+            
+            try {
+                // Save respondent info
+                const { data: respondentData, error: respondentError } = await supabase
+                    .from('respondents')
+                    .insert([{ email, name, company, role }])
+                    .select();
+                
+                if (respondentError) throw respondentError;
+                
+                // Link respondent to session
+                if (sessionId && respondentData[0]) {
+                    await supabase
+                        .from('sessions')
+                        .update({ respondent_id: respondentData[0].id })
+                        .eq('id', sessionId);
+                }
+                
+                // Now show results
+                showResults();
+                
+            } catch (error) {
+                console.error('Error saving contact info:', error);
+                errorDiv.textContent = 'There was an error. Please try again.';
+                errorDiv.classList.remove('hidden');
+                submitContactBtn.disabled = false;
+                submitContactBtn.innerText = 'View my results →';
+            }
+        }
+
+        function showResults() {
+            document.getElementById('contact-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+
+            const { type, lensText } = quizResults;
+            const profile = archetypes[type];
+
             document.getElementById('archetype-title').innerText = `${lensText} ${profile.name}`;
             document.getElementById('archetype-desc').innerText = profile.desc;
             document.getElementById('prescription-text').innerHTML = `${profile.advice}${bottleneckAdvice[scores.bottleneck] || ''}`;
-            document.getElementById('cohort-intro-text').innerText = cohortIntros[type];
 
             const xPercent = ((scores.x + 5) / 10) * 100;
             const yPercent = 100 - (((scores.y + 5) / 10) * 100);
@@ -564,75 +641,6 @@
                 dot.style.left = `${xPercent}%`;
                 dot.style.top = `${yPercent}%`;
             }, 100);
-
-            // Set up contact form submission
-            setupContactForm();
-        }
-
-        function setupContactForm() {
-            const submitButton = document.getElementById('cta-btn');
-            const originalText = submitButton.innerText;
-            
-            submitButton.addEventListener('click', async function(e) {
-                e.preventDefault();
-                
-                const email = document.getElementById('contact-email').value.trim();
-                const name = document.getElementById('contact-name').value.trim();
-                const company = document.getElementById('contact-company').value.trim();
-                const role = document.getElementById('contact-role').value.trim();
-                
-                const errorDiv = document.getElementById('contact-error');
-                const successDiv = document.getElementById('contact-success');
-                
-                errorDiv.classList.add('hidden');
-                successDiv.classList.add('hidden');
-                
-                if (!email) {
-                    errorDiv.textContent = 'Please enter your email address.';
-                    errorDiv.classList.remove('hidden');
-                    return;
-                }
-                
-                submitButton.disabled = true;
-                submitButton.innerText = 'Saving...';
-                
-                try {
-                    // Save respondent info
-                    const { data: respondentData, error: respondentError } = await supabase
-                        .from('respondents')
-                        .insert([{ email, name, company, role }])
-                        .select();
-                    
-                    if (respondentError) throw respondentError;
-                    
-                    // Link respondent to session
-                    if (sessionId && respondentData[0]) {
-                        await supabase
-                            .from('sessions')
-                            .update({ respondent_id: respondentData[0].id })
-                            .eq('id', sessionId);
-                    }
-                    
-                    successDiv.textContent = 'Thank you! Your information has been saved.';
-                    successDiv.classList.remove('hidden');
-                    
-                    // Open calendar link after 1 second
-                    setTimeout(() => {
-                        window.open(CALENDAR_LINK, '_blank');
-                    }, 1000);
-                    
-                } catch (error) {
-                    console.error('Error saving contact info:', error);
-                    errorDiv.textContent = 'There was an error saving your information. Please try again.';
-                    errorDiv.classList.remove('hidden');
-                    submitButton.disabled = false;
-                    submitButton.innerText = originalText;
-                }
-            }, { once: true }); // Only attach once
-        }
-
-        function handleCTAClick() {
-            // This will be replaced by setupContactForm when results are shown
         }
     }
     </script>
