@@ -27,12 +27,24 @@
 
         .matrix-dot { transition: all 1s ease-out; }
         
-        /* Remove all hover effects on quiz buttons */
+        /* Quiz button styles */
         .quiz-option {
             cursor: pointer;
         }
-        .quiz-option:active {
-            transform: scale(0.98);
+        
+        /* Selected state - clear visual feedback */
+        .quiz-option.selected {
+            background-color: #0f172a !important;
+            border-color: #0f172a !important;
+        }
+        
+        .quiz-option.selected .option-radio {
+            background-color: white !important;
+            border-color: white !important;
+        }
+        
+        .quiz-option.selected .option-text {
+            color: white !important;
         }
     </style>
 </head>
@@ -452,18 +464,27 @@
                 
                 q.options.forEach(opt => {
                     const btn = document.createElement('button');
-                    // No hover effects - clean and simple
                     btn.className = "quiz-option w-full text-left p-5 rounded-xl border-2 border-slate-100 bg-white transition-all duration-200 flex items-start shadow-sm";
                     
                     btn.addEventListener('click', function() {
-                        handleChoice(opt);
+                        // Add selected state immediately
+                        btn.classList.add('selected');
+                        
+                        // Disable all buttons to prevent multiple clicks
+                        const allButtons = optionsContainer.querySelectorAll('button');
+                        allButtons.forEach(b => b.disabled = true);
+                        
+                        // Wait a moment to show selection, then proceed
+                        setTimeout(() => {
+                            handleChoice(opt);
+                        }, 300);
                     });
                     
                     const radio = document.createElement('div');
-                    radio.className = "w-5 h-5 rounded-full border-2 border-slate-300 mr-4 mt-1 flex-shrink-0";
+                    radio.className = "option-radio w-5 h-5 rounded-full border-2 border-slate-300 mr-4 mt-1 flex-shrink-0 transition-all";
                     
                     const span = document.createElement('span');
-                    span.className = "text-lg text-slate-700 font-medium";
+                    span.className = "option-text text-lg text-slate-700 font-medium transition-all";
                     span.innerText = opt.text;
                     
                     btn.appendChild(radio);
