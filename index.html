@@ -26,6 +26,14 @@
         }
 
         .matrix-dot { transition: all 1s ease-out; }
+        
+        /* Remove all hover effects on quiz buttons */
+        .quiz-option {
+            cursor: pointer;
+        }
+        .quiz-option:active {
+            transform: scale(0.98);
+        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
@@ -444,15 +452,15 @@
                 
                 q.options.forEach(opt => {
                     const btn = document.createElement('button');
-                    // Start with no hover classes
-                    btn.className = "w-full text-left p-5 rounded-xl border-2 border-slate-100 bg-white transition-all duration-200 group flex items-start shadow-sm";
+                    // No hover effects - clean and simple
+                    btn.className = "quiz-option w-full text-left p-5 rounded-xl border-2 border-slate-100 bg-white transition-all duration-200 flex items-start shadow-sm";
                     
                     btn.addEventListener('click', function() {
                         handleChoice(opt);
                     });
                     
                     const radio = document.createElement('div');
-                    radio.className = "w-5 h-5 rounded-full border-2 border-slate-300 mr-4 mt-1 flex-shrink-0 transition-colors";
+                    radio.className = "w-5 h-5 rounded-full border-2 border-slate-300 mr-4 mt-1 flex-shrink-0";
                     
                     const span = document.createElement('span');
                     span.className = "text-lg text-slate-700 font-medium";
@@ -462,18 +470,6 @@
                     btn.appendChild(span);
                     optionsContainer.appendChild(btn);
                 });
-
-                // Enable hover effects after animation completes
-                setTimeout(() => {
-                    const buttons = optionsContainer.querySelectorAll('button');
-                    buttons.forEach(btn => {
-                        btn.classList.add('hover:border-slate-900', 'hover:bg-slate-50');
-                        const radio = btn.querySelector('div');
-                        const span = btn.querySelector('span');
-                        radio.classList.add('group-hover:border-slate-900', 'group-hover:bg-slate-900');
-                        span.classList.add('group-hover:text-slate-900');
-                    });
-                }, 400);
                 
             } else {
                 optionsContainer.classList.add('hidden');
